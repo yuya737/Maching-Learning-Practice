@@ -30,8 +30,25 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
+predicted = X * all_theta';
+
+% A much more simple code 
+% [temp, p] = max(predicted, [], 2);
 
 
+
+
+for i = 1:m
+  max = 0;
+  index = 1;
+  for j = 1:num_labels
+    if (predicted(i, j) > max)
+      max = predicted(i, j);
+      index = j;
+    endif;
+    p(i) = index;
+  end;
+end;
 
 
 
