@@ -34,8 +34,17 @@ grad = zeros(size(theta));
 %           temp = theta; 
 %           temp(1) = 0;   % because we don't add anything for j = 0  
 %           grad = grad + YOUR_CODE_HERE (using the temp variable)
+
 %
 
+predicted = X * theta;
+spredicted = sigmoid(predicted);
+
+temp = theta;
+temp(1) = 0;
+
+J = 1 / m * sum((-y .* log(spredicted)) - ((1 - y) .* log(1 - spredicted))) + lambda / (2*m) * sum(temp.^2);
+grad = 1 / m * (X' * (spredicted - y)) + lambda / m * temp;
 
 
 
