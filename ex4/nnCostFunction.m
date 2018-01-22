@@ -38,6 +38,32 @@ Theta2_grad = zeros(size(Theta2));
 %         variable J. After implementing Part 1, you can verify that your
 %         cost function computation is correct by verifying the cost
 %         computed in ex4.m
+
+X = [ones(size(X, 1), 1) X];
+
+z2 = X * Theta1';
+a2 = sigmoid(z2);
+a2 = [ones(size(a2, 1), 1) a2];
+
+z3 = a2 * Theta2';
+a3 = sigmoid(z3);
+
+
+for i = 1:num_labels
+  yi = y == i;
+  a3i = a3(:, i);
+  J = J + sum(-yi .* log(a3i) - (1 - yi) .* log(1 - a3i));
+end;
+
+J = J / m;
+  
+
+
+regularization = lambda / (2 * m) * (sum(sum(Theta1(:, 2 : end) .^ 2)) + (sum(sum(Theta2(:, 2 : end) .^ 2)))); 
+J = J + regularization;
+  
+
+
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
 %         Theta1_grad and Theta2_grad. You should return the partial derivatives of
@@ -53,7 +79,32 @@ Theta2_grad = zeros(size(Theta2));
 %         Hint: We recommend implementing backpropagation using a for-loop
 %               over the training examples if you are implementing it for the 
 %               first time.
-%
+
+for t = 1:m
+  z2t = z2(t, :);
+  a2t = a2(t, :);
+  z3t = z3(t, :);
+  a3t = a3(t, :);
+  yt = zeros(num_labels, 1);
+  yt(y(t)) = 1;
+  delta3 = a3t' - yt;
+  %display(size(delta3));
+  temp = sigmoidGradient([1, z2t]);
+  %display(size(temp));
+  delta2 = Theta2' * delta3 .* temp';
+  delta2 = delta2(2:end);
+  %display(size(delta2));
+  
+  Theta1_grad = Theta1_grad + delta2 * X(t, :);
+  Theta2_grad = Theta2_grad + delta3 * a2(t, :);
+end;
+
+Theta1_grad = Theta1_grad / m;
+Theta2_grad = Theta2_grad / m;
+
+Theta1_grad(:, 2: end) = Theta1_grad(:, 2: end) + lambda / m * Theta1(:, 2: end);
+Theta2_grad(:, 2: end) = Theta2_grad(:, 2: end) + lambda / m * Theta2(:, 2: end);
+
 % Part 3: Implement regularization with the cost function and gradients.
 %
 %         Hint: You can implement this around the code for
@@ -61,30 +112,6 @@ Theta2_grad = zeros(size(Theta2));
 %               the regularization separately and then add them to Theta1_grad
 %               and Theta2_grad from Part 2.
 %
-
-
-X = [ones((size(X, 1)), 1) X];
-
-z2 = X * Theta1'; %5000 * 401 times 401 & 25 ;;;; 5000 * 25
-a2 = sigmoid(z2);
-
-a2 = [ones((size(a2, 1)), 1) a2];
-
-z3 = a2 * Theta2'; %5000 * 26 times 26 * 10 ;;;; 5000 * 10
-a3 = sigmoid(z3); %5000 * 10
-
-m = size(X, 1); %5000
-k = size(a3, 2); %10
-
-yk = zeros(m, k); %5000 * 10
-one = ones(m, k); %5000 * 10
-for i = 1:k %from 1 to 10
-  yk(:, i) = y == i;
-end;
-
-J = 1 / m * sum(sum(-yk .* log(a3)) - (one - yk) .* log(one-log(a3)));
-
-
 
 
 
