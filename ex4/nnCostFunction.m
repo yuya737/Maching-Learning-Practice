@@ -63,6 +63,30 @@ Theta2_grad = zeros(size(Theta2));
 %
 
 
+X = [ones((size(X, 1)), 1) X];
+
+z2 = X * Theta1'; %5000 * 401 times 401 & 25 ;;;; 5000 * 25
+a2 = sigmoid(z2);
+
+a2 = [ones((size(a2, 1)), 1) a2];
+
+z3 = a2 * Theta2'; %5000 * 26 times 26 * 10 ;;;; 5000 * 10
+a3 = sigmoid(z3); %5000 * 10
+
+m = size(X, 1); %5000
+k = size(a3, 2); %10
+
+yk = zeros(m, k); %5000 * 10
+one = ones(m, k); %5000 * 10
+for i = 1:k %from 1 to 10
+  yk(:, i) = y == i;
+end;
+
+J = 1 / m * sum(sum(-yk .* log(a3)) - (one - yk) .* log(one-log(a3)));
+
+
+
+
 
 
 
